@@ -18,15 +18,16 @@ The class uses static methods and is fully compatible with WHMCS arguments. The 
 This class unlike WHMCS add_hook() supports class callbacks.
 
 ### Example
-
+```php
   whmcsHookManager::addHook("AdminLogin",1,"myHookFuntion");
   function myHookFunction($vars)
   {
     var_dump($vars);
     die();
   }
-
+```
 ### Class Example
+  ```php
   $someClass = new myHookCallbackClass;
   whmcsHookManager::addHook("AdminLogin",1,array($someClass,"myHookCallbackMethod"));
   class myHookCallbackClass()
@@ -37,7 +38,7 @@ This class unlike WHMCS add_hook() supports class callbacks.
       die();
     }
   }
-
+```
 
 How To Install
 --------------
