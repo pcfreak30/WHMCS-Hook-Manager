@@ -50,8 +50,8 @@ foreach($whmcsHookList as $whmcsHook)
 		eval("function $func()".'
 		{
 			$args = func_get_args();
-			$result = return whmcsHookManager::runHook($whmcsHook,&$args);
-			return empty($result) ? array() : $result[0];
+			$result = whmcsHookManager::runHook($whmcsHook,&$args);
+			return (empty($result) ? array() : $result[0]);
 		}');
 		add_hook($whmcsHook,1,$func);
 	}
