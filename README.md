@@ -13,7 +13,7 @@ This was causing only 1 hook to function properly at a time. It also apparently 
 How to Use With WHMCS Hooks
 ---------------------------
 
-The class uses static methods and is fully compatible with WHMCS arguments. The only catch is due to the use of func_get_args(), you may need to go a level deeper in the argument/param array to get arguments.
+The class uses static methods and is fully compatible with WHMCS arguments. The only catch is due to the use of func_get_args(), you will need to access index 0 of the arguments to get to the needed data..
 
 This class unlike WHMCS add_hook() supports class callbacks.
 
@@ -22,27 +22,27 @@ This class unlike WHMCS add_hook() supports class callbacks.
   whmcsHookManager::addHook("AdminLogin",1,"myHookFuntion");
   function myHookFunction($vars)
   {
-    var_dump($vars);
-    die();
+    $vars[0]["test"] = "Hello World";
+    return $vars;
   }
 ```
 ### Class Example
   ```php
   $someClass = new myHookCallbackClass;
-  whmcsHookManager::addHook("AdminLogin",1,array($someClass,"myHookCallbackMethod"));
+  whmcsHookManager::addHook("AdminLogin",1,array($someClass,"myHookCallbackMethod"),array("test" =>"test argument"));
   class myHookCallbackClass()
   {
     function myHookCallbackMethod($vars)
     {
-      var_dump($vars);
-      die();
+      $vars[0]["test"] = "Hello World";
+      return $vars;
     }
   }
 ```
 
 How To Install
 --------------
-I recommend you put this class in [WHMCS ROOT]/includes/hooks/. If you put it with you module, use a require_once and/or class_exists() check to prevent duplicate declarations.
+I recommend you put this class with your module/hook and do a require at the top. The class has a class_exists check to prevent duplicate declaration.
 
 Contributing
 ------------

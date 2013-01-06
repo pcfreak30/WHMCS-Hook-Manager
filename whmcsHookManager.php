@@ -1,57 +1,54 @@
 <?php
-if(!class_exists("whmcsHookManager"))
-{
-class whmcsHookManager
-{
-	static $hooks;
-	public static function addHook( $hook, $priority, $func )
+if ( !class_exists( "whmcsHookManager" ) ) {
+	class whmcsHookManager
 	{
-		if ( !isset( self::$hooks[$hook] ) ) {
-			self::$hooks[$hook] = array( );
-		}
-		if ( !isset( self::$hooks[$hook][$priority] ) ) {
-			self::$hooks[$hook][$priority] = array( );
-		}
-		self::$hooks[$hook][$priority][ ] = $func;
-	}
-	public static function removeHook( $hook, $func )
-	{
-		for ( $i = 0; $i < count( self::$hooks[$hook][$priority] ); $i++ ) {
-			if ( self::$hooks[$hook][$priority][$i] == $func ) {
-				unset( self::$hooks[$hook][$priority][$i] );
+		private static $hooks;
+		public static function addHook( $hook, $priority, $func )
+		{
+			if ( !isset( self::$hooks[$hook] ) ) {
+				self::$hooks[$hook] = array( );
 			}
+			if ( !isset( self::$hooks[$hook][$priority] ) ) {
+				self::$hooks[$hook][$priority] = array( );
+			}
+			self::$hooks[$hook][$priority][ ] = $func;
 		}
-	}
-	public static function runHook( $hook, $args )
-	{
-		if ( !isset( self::$hooks[$hook] ) ) {
-			return false;
-		}
-		foreach ( self::$hooks[$hook] as $hookPriority => $hookList ) {
-			for ( $p = 0; $p < count( self::$hooks[$hook][$hookPriority] ); $p++ ) {
-				if ( is_array( self::$hooks[$hook][$hookPriority][$p] ) ) {
-					if( !is_array( $args ) )
-					{
-						$args = call_user_func_array( self::$hooks[$hook][$hookPriority][$p], array( $args ) );
-					}
-					else
-					{
-						$args = call_user_func_array( self::$hooks[$hook][$hookPriority][$p], $args );
-					}
-				} else {
-					$func = self::$hooks[$hook][$hookPriority][$p];
-					$result = $func( $args );
-				}
-				if(!empty($result))
-				{
-					$args = $result;
+		public static function removeHook( $hook, $func )
+		{
+			for ( $i = 0; $i < count( self::$hooks[$hook][$priority] ); $i++ ) {
+				if ( self::$hooks[$hook][$priority][$i] == $func ) {
+					unset( self::$hooks[$hook][$priority][$i] );
 				}
 			}
 		}
-		return $args;
+		public static function runHook( $hook, $args )
+		{
+			if ( !isset( self::$hooks[$hook] ) ) {
+				return false;
+			}
+			foreach ( self::$hooks[$hook] as $hookPriority => $hookList ) {
+				for ( $p = 0; $p < count( self::$hooks[$hook][$hookPriority] ); $p++ ) {
+					if ( is_array( self::$hooks[$hook][$hookPriority][$p] ) ) {
+						if ( !is_array( $args ) ) {
+							$args = call_user_func_array( self::$hooks[$hook][$hookPriority][$p], array(
+								 $args 
+							) );
+						} else {
+							$args = call_user_func_array( self::$hooks[$hook][$hookPriority][$p], $args );
+						}
+					} else {
+						$func   = self::$hooks[$hook][$hookPriority][$p];
+						$result = $func( $args );
+					}
+					if ( !empty( $result ) ) {
+						$args = $result;
+					}
+				}
+			}
+			return $args;
+		}
 	}
-}
-$whmcsHookList = "AdminLogin:none
+	$whmcsHookList = "AdminLogin:none
 AdminLogout:none
 AnnouncementAdd:none
 AnnouncementEdit:none
@@ -157,20 +154,18 @@ ClientDetailsValidation:none
 ClientClose:none
 ClientDelete:none
 PreDeleteClient:none";
-$whmcsHookList = explode("\n",$whmcsHookList);
-foreach($whmcsHookList as $whmcsHook)
-{
-	$parts = explode(":",$whmcsHook);
-	$func = "whmcsHookManager_Hook_".$parts[0];
-	if(!function_exists($func))
-	{
-		eval("function $func()".'
+	$whmcsHookList = explode( "\n", $whmcsHookList );
+	foreach ( $whmcsHookList as $whmcsHook ) {
+		$parts = explode( ":", $whmcsHook );
+		$func  = "whmcsHookManager_Hook_" . $parts[0];
+		if ( !function_exists( $func ) ) {
+			eval( "function $func()" . '
 		{
 			$args = func_get_args();
-			$args = whmcsHookManager::runHook("'.$parts[0].'",$args);
+			$args = whmcsHookManager::runHook("' . $parts[0] . '",$args);
 			if(!empty( $args ) )
 			{
-				switch("'.$parts[1].'")
+				switch("' . $parts[1] . '")
 				{
 					case "string":
 						return (string) $args[0];
@@ -182,9 +177,9 @@ foreach($whmcsHookList as $whmcsHook)
 					break;
 				}
 			}
-		}');
-		add_hook($parts[0],1,$func);
+		}' );
+			add_hook( $parts[0], 1, $func );
+		}
 	}
-}
 }
 ?>
