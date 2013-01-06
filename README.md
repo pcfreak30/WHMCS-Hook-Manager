@@ -3,8 +3,8 @@ WHMCS Hook Manager
 
 Purpose
 -------
-This class and associated code was created due to the fact that WHMCS does not allow mutiple hooks calls on the same prioity.
-The issue comes with encrypted code you can not change. What if two functions were put in the same hook prioity? It would not run as expected.
+This class and associated code was created due to the fact that WHMCS does not allow mutiple hooks calls on the same priority.
+The issue comes with encrypted code you can not change. What if two functions were put in the same hook priority? It would not run as expected.
 
 This was intally created as I found having 2 hooks calls to "inject" code into a client area page were canceling each other out. Somehow the array argument getting past was getting cleared/reset even when no result was returned from the hook function callback.
 This was causing only 1 hook to function properly at a time. It also apparently occured for that specific hook even on different priorities.
