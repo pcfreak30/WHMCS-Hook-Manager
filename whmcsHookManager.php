@@ -1,7 +1,9 @@
 <?php
+if(!class_exists("whmcsHookManager"))
+{
 class whmcsHookManager
 {
-	private static $hooks;
+	static $hooks;
 	public static function addHook( $hook, $priority, $func )
 	{
 		if ( !isset( self::$hooks[$hook] ) ) {
@@ -20,40 +22,169 @@ class whmcsHookManager
 			}
 		}
 	}
-	public static function runHook( $hook )
+	public static function runHook( $hook, $args )
 	{
-		$args = func_get_args();
-		$args = empty( $args[1] ) ? array( ) : $args[1];
 		if ( !isset( self::$hooks[$hook] ) ) {
 			return false;
 		}
 		foreach ( self::$hooks[$hook] as $hookPriority => $hookList ) {
 			for ( $p = 0; $p < count( self::$hooks[$hook][$hookPriority] ); $p++ ) {
 				if ( is_array( self::$hooks[$hook][$hookPriority][$p] ) ) {
-					call_user_func_array( self::$hooks[$hook][$hookPriority][$p], $args );
+					if( !is_array( $args ) )
+					{
+						$args = call_user_func_array( self::$hooks[$hook][$hookPriority][$p], array( $args ) );
+					}
+					else
+					{
+						$args = call_user_func_array( self::$hooks[$hook][$hookPriority][$p], $args );
+					}
 				} else {
 					$func = self::$hooks[$hook][$hookPriority][$p];
-					$func( &$args );
+					$result = $func( $args );
+				}
+				if(!empty($result))
+				{
+					$args = $result;
 				}
 			}
 		}
 		return $args;
 	}
 }
-$whmcsHookList = "AdminLogin,AdminLogout,AnnouncementAdd,AnnouncementEdit,NetworkIssueAdd,NetworkIssueEdit,NetworkIssueClose,NetworkIssueReopen,NetworkIssueDelete,ProductEdit,ProductDelete,ServerAdd,ServerEdit,ServerDelete,EmailPreSend,DailyCronJob,ClientAreaHomepage,ClientAreaPage,ClientAreaHeadOutput,ClientAreaHeaderOutput,ClientAreaFooterOutput,AdminAreaPage,AdminAreaHeadOutput,AdminAreaHeaderOutput,AdminAreaFooterOutput,AdminHomepage,AdminAreaClientSummaryPage,ViewOrderDetailsPage,TicketOpen,TicketAdminReply,TicketUserReply,TicketOpenAdmin,TicketAddNote,SubmitTicketAnswerSuggestions,InvoiceCreated,InvoiceCreationPreEmail,InvoiceCreationAdminArea,UpdateInvoiceTotal,AddInvoicePayment,InvoicePaid,InvoicePaidPreEmail,InvoiceUnpaid,InvoiceCancelled,InvoiceRefunded,ManualRefund,AddTransaction,LogTransaction,AddInvoiceLateFee,InvoicePaymentReminder,InvoiceChangeGateway,ShoppingCartValidateProductUpdate,ShoppingCartValidateCheckout,PreCalculateCartTotals,PreShoppingCartCheckout,AfterShoppingCartCheckout,ShoppingCartCheckoutCompletePage,AcceptOrder,CancelOrder,FraudOrder,PendingOrder,DeleteOrder,PreDomainRegister,AfterRegistrarRegistration,AfterRegistrarRegistrationFailed,AfterRegistrarTransfer,AfterRegistrarTransferFailed,AfterRegistrarRenewal,AfterRegistrarRenewalFailed,AddonActivation,AddonAdd,AddonEdit,AddonActivated,AddonSuspended,AddonTerminated,AddonCancelled,AddonFraud,AddonDeleted,AfterModuleCreate,PreModuleCreate,AfterModuleSuspend,PreModuleSuspend,AfterModuleUnsuspend,PreModuleUnsuspend,AfterModuleTerminate,PreModuleTerminate,AfterModuleRenew,PreModuleRenew,AfterModuleChangePassword,AfterModuleChangePackage,AdminServiceEdit,CancellationRequest,AfterProductUpgrade,AfterConfigOptionsUpgrade,ContactAdd,ContactEdit,ContactDelete,ClientAdd,ClientAreaRegister,ClientEdit,ClientLogin,ClientLogout,ClientChangePassword,ClientDetailsValidation,ClientClose,ClientDelete,PreDeleteClient";
-$whmcsHookList = explode(",",$whmcsHookList);
+$whmcsHookList = "AdminLogin:none
+AdminLogout:none
+AnnouncementAdd:none
+AnnouncementEdit:none
+NetworkIssueAdd:none
+NetworkIssueEdit:none
+NetworkIssueClose:none
+NetworkIssueReopen:none
+NetworkIssueDelete:none
+ProductEdit:none
+ProductDelete:none
+ServerAdd:none
+ServerEdit:none
+ServerDelete:none
+EmailPreSend:array
+DailyCronJob:none
+ClientAreaHomepage:array
+ClientAreaPage:array
+ClientAreaHeadOutput:string
+ClientAreaHeaderOutput:string
+ClientAreaFooterOutput:array
+AdminAreaPage:array
+AdminAreaHeadOutput:string
+AdminAreaHeaderOutput:string
+AdminAreaFooterOutput:string
+AdminHomepage:string
+AdminAreaClientSummaryPage:string
+ViewOrderDetailsPage:string
+TicketOpen:none
+TicketAdminReply:none
+TicketUserReply:none
+TicketOpenAdmin:none
+TicketAddNote:none
+SubmitTicketAnswerSuggestions:none
+InvoiceCreated:none
+InvoiceCreationPreEmail:none
+InvoiceCreationAdminArea:none
+UpdateInvoiceTotal:none
+AddInvoicePayment:none
+InvoicePaid:none
+InvoicePaidPreEmail:none
+InvoiceUnpaid:none
+InvoiceCancelled:none
+InvoiceRefunded:none
+ManualRefund:none
+AddTransaction:none
+LogTransaction:none
+AddInvoiceLateFee:none
+InvoicePaymentReminder:none
+InvoiceChangeGateway:none
+ShoppingCartValidateProductUpdate:none
+ShoppingCartValidateCheckout:none
+PreCalculateCartTotals:none
+PreShoppingCartCheckout:none
+AfterShoppingCartCheckout:none
+ShoppingCartCheckoutCompletePage:none
+AcceptOrder:none
+CancelOrder:none
+FraudOrder:none
+PendingOrder:none
+DeleteOrder:none
+PreDomainRegister:none
+AfterRegistrarRegistration:none
+AfterRegistrarRegistrationFailed:none
+AfterRegistrarTransfer:none
+AfterRegistrarTransferFailed:none
+AfterRegistrarRenewal:none
+AfterRegistrarRenewalFailed:none
+AddonActivation:none
+AddonAdd:none
+AddonEdit:none
+AddonActivated:none
+AddonSuspended:none
+AddonTerminated:none
+AddonCancelled:none
+AddonFraud:none
+AddonDeleted:none
+AfterModuleCreate:none
+PreModuleCreate:none
+AfterModuleSuspend:none
+PreModuleSuspend:none
+AfterModuleUnsuspend:none
+PreModuleUnsuspend:none
+AfterModuleTerminate:none
+PreModuleTerminate:none
+AfterModuleRenew:none
+PreModuleRenew:none
+AfterModuleChangePassword:none
+AfterModuleChangePackage:none
+AdminServiceEdit:none
+CancellationRequest:none
+AfterProductUpgrade:none
+AfterConfigOptionsUpgrade:none
+ContactAdd:none
+ContactEdit:none
+ContactDelete:none
+ClientAdd:none
+ClientAreaRegister:none
+ClientEdit:none
+ClientLogin:none
+ClientLogout:none
+ClientChangePassword:none
+ClientDetailsValidation:none
+ClientClose:none
+ClientDelete:none
+PreDeleteClient:none";
+$whmcsHookList = explode("\n",$whmcsHookList);
 foreach($whmcsHookList as $whmcsHook)
 {
-	$func = "whmcsHookManager_Hook_".$whmcsHook;
+	$parts = explode(":",$whmcsHook);
+	$func = "whmcsHookManager_Hook_".$parts[0];
 	if(!function_exists($func))
 	{
 		eval("function $func()".'
 		{
 			$args = func_get_args();
-			$result = whmcsHookManager::runHook($whmcsHook,&$args);
-			return (empty($result) ? array() : $result[0]);
+			$args = whmcsHookManager::runHook("'.$parts[0].'",$args);
+			if(!empty( $args ) )
+			{
+				switch("'.$parts[1].'")
+				{
+					case "string":
+						return (string) $args[0];
+					break;
+					case "array":
+						return (array) $args[0];
+					break;
+					case "none":
+					break;
+				}
+			}
 		}');
-		add_hook($whmcsHook,1,$func);
+		add_hook($parts[0],1,$func);
 	}
+}
 }
 ?>
